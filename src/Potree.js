@@ -186,7 +186,9 @@ Potree.loadPointCloud = function(path, name, callback){
 			if(!geometry){
 				callback({type: "loading_failed"});
 			}else{
-				let pointcloud = new Potree.PointCloudOctree(geometry);
+                let pointcloud = geometry.isQuadTree ?
+                    new Potree.PointCloudQuadtree(geometry) :
+                    new Potree.PointCloudOctree(geometry);
 				loaded(pointcloud);
 			}
 		});
@@ -195,7 +197,11 @@ Potree.loadPointCloud = function(path, name, callback){
 			if(!geometry){
 				callback({type: "loading_failed"});
 			}else{
-				let pointcloud = new Potree.PointCloudOctree(geometry);
+				let pointcloud = geometry.isQuadTree ?
+                    new Potree.PointCloudQuadtree(geometry) :
+					new Potree.PointCloudOctree(geometry);
+
+
 				loaded(pointcloud);
 			}
 		}.bind(this));

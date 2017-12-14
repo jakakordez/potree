@@ -181,7 +181,8 @@ Potree.ClipMode = {
 
 Potree.TreeType = {
 	OCTREE:				0,
-	KDTREE:				1
+	KDTREE:				1,
+    QUADTREE:			2
 };
 
 
@@ -199,7 +200,7 @@ Potree.PointCloudMaterial = class PointCloudMaterial extends THREE.RawShaderMate
 		let maxSize = parameters.maxSize || 50.0;
 		let treeType = parameters.treeType || Potree.TreeType.OCTREE;
 		
-		this._pointSizeType = Potree.PointSizeType.FIXED;
+		this._pointSizeType = Potree.PointSizeType.ADAPTIVE;
 		this._shape = Potree.PointShape.SQUARE;
 		this._pointColorType = Potree.PointColorType.RGB;
 		this._useClipBox = false;
@@ -382,8 +383,10 @@ Potree.PointCloudMaterial = class PointCloudMaterial extends THREE.RawShaderMate
 		}else if(this.clipMode === Potree.ClipMode.HIGHLIGHT_INSIDE){
 			defines += "#define clip_highlight_inside\n";
 		}
-		
-		if(this._treeType === Potree.TreeType.OCTREE){
+
+        if(this._treeType === Potree.TreeType.QUADTREE){
+            defines += "#define tree_type_quadtree\n";
+        } else if(this._treeType === Potree.TreeType.OCTREE){
 			defines += "#define tree_type_octree\n";
 		}else if(this._treeType === Potree.TreeType.KDTREE){
 			defines += "#define tree_type_kdtree\n";

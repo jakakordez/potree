@@ -2021,9 +2021,9 @@ function initSceneList(){
 		}
 		
 		{ // SHAPE
-			
+            let strShapeType = Object.keys(Potree.PointShape)[pcMaterial.shape];
+
 			let opt = scenePanel.find(`#optShape_${i}`);
-			
 			opt.selectmenu({
 				change: (event, ui) => {
 					let value = ui.item.value;
@@ -2031,6 +2031,9 @@ function initSceneList(){
 					pcMaterial.shape = Potree.PointShape[value];
 				}
 			});
+
+            opt.selectmenu();
+            opt.val(strShapeType).selectmenu("refresh");
 			
 			pcMaterial.addEventListener("point_shape_changed", e => {
 				let typename = Object.keys(Potree.PointShape)[pcMaterial.shape];

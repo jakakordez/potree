@@ -19,8 +19,7 @@ Potree.POCLoader = function(){
  */
 Potree.POCLoader.load = function load(url, callback) {
 	try{
-		let pco = new Potree.PointCloudOctreeGeometry();
-		pco.url = url;
+		let pco = {};
 		let xhr = new XMLHttpRequest();
 		xhr.open('GET', url, true);
 		
@@ -29,14 +28,20 @@ Potree.POCLoader.load = function load(url, callback) {
 				let fMno = JSON.parse(xhr.responseText);
 				
 				let version = new Potree.Version(fMno.version);
-				
+
+				pco = fMno.isQuadTree ?
+					new Potree.PointCloudQuadtreeGeometry() :
+					new Potree.PointCloudOctreeGeometry();
+
+				pco.isQuadTree = fMno.isQuadTree;
+				pco.url = url;
+
 				// assume octreeDir is absolute if it starts with http
 				if(fMno.octreeDir.indexOf("http") === 0){
 					pco.octreeDir = fMno.octreeDir;
 				}else{
 					pco.octreeDir = url + "/../" + fMno.octreeDir;
 				}
-				
 				pco.spacing = fMno.spacing;
 				pco.hierarchyStepSize = fMno.hierarchyStepSize;
 
@@ -80,7 +85,10 @@ Potree.POCLoader.load = function load(url, callback) {
 				{ // load root
 					let name = "r";
 					
-					let root = new Potree.PointCloudOctreeGeometryNode(name, pco, boundingBox);
+					let root = fMno.isQuadTree ?
+						new Potree.PointCloudQuadtreeGeometryNode(name, pco, boundingBox) :
+						new Potree.PointCloudOctreeGeometryNode(name, pco, boundingBox);
+
 					root.level = 0;
 					root.hasChildren = true;
 					root.spacing = pco.spacing;
@@ -103,9 +111,15 @@ Potree.POCLoader.load = function load(url, callback) {
 						let parentName = name.substring(0, name.length-1);
 						let parentNode = nodes[parentName];
 						let level = name.length-1;
-						let boundingBox = Potree.POCLoader.createChildAABB(parentNode.boundingBox, index);
+
+						let boundingBox = fMno.isQuadTree ?
+							Potree.POCLoader.createChildAABBQuad(parentNode.boundingBox, index) :
+							Potree.POCLoader.createChildAABB(parentNode.boundingBox, index);
 						
-						let node = new Potree.PointCloudOctreeGeometryNode(name, pco, boundingBox);
+						let node = fMno.isQuadTree ?
+							new Potree.PointCloudQuadtreeGeometryNode(name, pco, boundingBox) :
+							new Potree.PointCloudOctreeGeometryNode(name, pco, boundingBox);
+
 						node.level = level;
 						node.numPoints = numPoints;
 						node.spacing = pco.spacing / Math.pow(2, level);
@@ -171,3 +185,23 @@ Potree.POCLoader.createChildAABB = function(aabb, index){
 };
 
 
+Potree.POCLoader.createChildAABBQuad = function(aabb, index){
+
+    let min = aabb.min.clone();
+    let max = aabb.max.clone();
+    let size = new THREE.Vector3().subVectors(max, min);
+
+    if((index & 0b0001) > 0){
+        min.y += size.y / 2;
+    }else{
+        max.y -= size.y / 2;
+    }
+
+    if((index & 0b0010) > 0){
+        min.x += size.x / 2;
+    }else{
+        max.x -= size.x / 2;
+    }
+
+    return new THREE.Box3(min, max);
+};
