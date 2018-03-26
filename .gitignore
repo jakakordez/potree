@@ -12,3 +12,14 @@ build/
 pointclouds/testd/
 .idea/
 index.html
+/build
+/test
+pointclouds/retz
+pointclouds/NVIDIA_Ph01-20160403_tiles_converted
+libs/CesiumUnminified
+/pointclouds/D
+/pointclouds/wrneustadt
+/pointclouds/alszeile
+/examples/page.html
+/resources/icons/index.html
+
