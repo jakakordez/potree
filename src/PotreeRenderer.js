@@ -338,7 +338,6 @@ Potree.Shader = class Shader {
 	}
 
 	setUniform(name, value) {
-
 		if (value.constructor === THREE.Matrix4) {
 			this.setUniformMatrix4(name, value);
 		} else if (typeof value === "number") {
@@ -358,7 +357,6 @@ Potree.Shader = class Shader {
 		} else {
 			console.error("unhandled uniform type: ", name, value);
 		}
-
 	}
 
 
@@ -637,6 +635,8 @@ Potree.Renderer = class Renderer {
 
 			let isLeaf;
 			if(node instanceof Potree.PointCloudOctreeNode){
+				isLeaf = Object.keys(node.children).length === 0;
+			}else if(node instanceof Potree.PointCloudQuadtreeNode){
 				isLeaf = Object.keys(node.children).length === 0;
 			}else if(node instanceof Potree.PointCloudArena4DNode){
 				isLeaf = node.geometryNode.isLeaf;

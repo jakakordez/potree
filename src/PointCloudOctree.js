@@ -39,7 +39,7 @@ Potree.PointCloudOctreeNode = class PointCloudOctreeNode extends Potree.PointClo
 	getChildren () {
 		let children = [];
 
-		for (let i = 0; i < 8; i++) {
+		for (let i = 0; i < 4; i++) {
 			if (this.children[i]) {
 				children.push(this.children[i]);
 			}
@@ -314,7 +314,7 @@ Potree.PointCloudOctree = class extends Potree.PointCloudTree {
 			visibleNodeTextureOffsets.set(node, i);
 
 			let children = [];
-			for (let j = 0; j < 8; j++) {
+			for (let j = 0; j < 4; j++) {
 				let child = node.children[j];
 
 				if( child && child.constructor === Potree.PointCloudOctreeNode && nodes.includes(child, i)){
