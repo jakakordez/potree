@@ -2374,6 +2374,7 @@ function initSceneList(){
 		$('#lblRGBBrightness' + i)[0].innerHTML = pcMaterial.rgbBrightness.toFixed(2);
 
 		let options = [ 
+			"Normal",
 			"RGB", 
 			"RGB and Elevation",
 			"Color", 
@@ -2382,6 +2383,7 @@ function initSceneList(){
 			"Intensity Gradient", 
 			"Classification", 
 			"Return Number", 
+			
 			"Source", 
 			"Phong",
 			"Level of Detail",

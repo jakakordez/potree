@@ -171,6 +171,7 @@ Potree.LasLazBatcher = class LasLazBatcher{
 			let returnNumbers = new Uint8Array(e.data.returnNumber);
 			let numberOfReturns = new Uint8Array(e.data.numberOfReturns);
 			let pointSourceIDs = new Uint16Array(e.data.pointSourceID);
+			let normals = new Float32Array(e.data.normals);
 			//let indices = new ArrayBuffer(numPoints*4);
 			//let iIndices = new Uint32Array(indices);
 			
@@ -188,7 +189,7 @@ Potree.LasLazBatcher = class LasLazBatcher{
 			geometry.addAttribute('returnNumber', new THREE.BufferAttribute(returnNumbers, 1));
 			geometry.addAttribute('numberOfReturns', new THREE.BufferAttribute(numberOfReturns, 1));
 			geometry.addAttribute('pointSourceID', new THREE.BufferAttribute(pointSourceIDs, 1));
-			geometry.addAttribute("normal", new THREE.BufferAttribute(new Float32Array(numPoints*3), 3));
+			geometry.addAttribute("normal", new THREE.BufferAttribute(/*new Float32Array(numPoints*3)*/normals, 3));
 			
 			let indicesAttribute = new THREE.Uint8BufferAttribute(e.data.indices, 4);
 			indicesAttribute.normalized = true;

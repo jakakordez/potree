@@ -77,6 +77,7 @@ onmessage = function(event){
 	var rnBuff = new ArrayBuffer(numPoints);
 	var nrBuff = new ArrayBuffer(numPoints);
 	var psBuff = new ArrayBuffer(numPoints * 2);
+	var nBuff = new ArrayBuffer(numPoints*3*4);
 	
 	var positions = new Float32Array(pBuff);
 	var colors = new Uint8Array(cBuff);
@@ -85,6 +86,7 @@ onmessage = function(event){
 	var returnNumbers = new Uint8Array(rnBuff);
 	var numberOfReturns = new Uint8Array(nrBuff);
 	var pointSourceIDs = new Uint16Array(psBuff);
+	var normals = new Float32Array(nBuff);
 	var tightBoundingBox = {
 		min: [ Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY],
 		max: [ Number.NEGATIVE_INFINITY , Number.NEGATIVE_INFINITY , Number.NEGATIVE_INFINITY ]
@@ -176,6 +178,13 @@ onmessage = function(event){
 			colors[3*i+0] = r / 256;
 			colors[3*i+1] = g / 256;
 			colors[3*i+2] = b / 256;
+
+			normals[3*i+0] = bufferView[i*pointSize+20]/256.0;
+			normals[3*i+1] = bufferView[i*pointSize+22]/256.0;
+			normals[3*i+2] = bufferView[i*pointSize+24]/256.0;
+			
+			//if(normals[3*i+2] != normals[3*i+1] && normals[3*i+1] != normals[3*i+0]) console.log("different")
+			//else console.log("Same")
 		}
 	}
 	
@@ -195,7 +204,8 @@ onmessage = function(event){
 		numberOfReturns: nrBuff,
 		pointSourceID: psBuff,
 		tightBoundingBox: tightBoundingBox,
-		indices: indices
+		indices: indices,
+		normals: nBuff
 	};
 		
 	var transferables = [
@@ -206,7 +216,8 @@ onmessage = function(event){
 		message.returnNumber,
 		message.numberOfReturns,
 		message.pointSourceID,
-		message.indices];
+		message.indices,
+		message.normals];
 		
 	postMessage(message, transferables);
 };

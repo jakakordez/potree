@@ -449,7 +449,7 @@ void main() {
 	#elif defined color_type_source
 		vColor = getSourceID();
 	#elif defined color_type_normal
-		vColor = (modelMatrix * vec4(normal, 0.0)).xyz;
+		vColor = normal;//(/*modelMatrix * */vec4(normal, 0.0)).xyz;
 	#elif defined color_type_phong
 		vColor = color;
 	#elif defined color_type_composite
