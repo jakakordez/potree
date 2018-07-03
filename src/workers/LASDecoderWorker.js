@@ -69,6 +69,7 @@ onmessage = function(event){
 	var tempFloat32 = new Float32Array(temp);
 	var tempInt32 = new Int32Array(temp);
 	var bufferView = new Uint8Array(buffer);
+	var sbufferView = new Int8Array(buffer);
 	
 	var pBuff = new ArrayBuffer(numPoints*3*4);
 	var cBuff = new ArrayBuffer(numPoints*3);
@@ -179,12 +180,15 @@ onmessage = function(event){
 			colors[3*i+1] = g / 256;
 			colors[3*i+2] = b / 256;
 
-			normals[3*i+0] = bufferView[i*pointSize+20]/256.0;
-			normals[3*i+1] = bufferView[i*pointSize+22]/256.0;
-			normals[3*i+2] = bufferView[i*pointSize+24]/256.0;
-			
-			//if(normals[3*i+2] != normals[3*i+1] && normals[3*i+1] != normals[3*i+0]) console.log("different")
-			//else console.log("Same")
+			normals[3*i+0] = sbufferView[i*pointSize+20]/128.0;
+			normals[3*i+1] = sbufferView[i*pointSize+22]/128.0;
+			normals[3*i+2] = sbufferView[i*pointSize+24]/128.0;
+
+			if(classification == 9){
+				normals[3*i+0] = 0.0;
+				normals[3*i+1] = 0.0;
+				normals[3*i+2] = 1.0;
+			}
 		}
 	}
 	

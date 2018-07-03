@@ -2383,7 +2383,6 @@ function initSceneList(){
 			"Intensity Gradient", 
 			"Classification", 
 			"Return Number", 
-			
 			"Source", 
 			"Phong",
 			"Level of Detail",
