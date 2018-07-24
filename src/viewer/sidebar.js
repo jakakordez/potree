@@ -1935,6 +1935,17 @@ function initSceneList(){
 							<li>Brightness: <span id="lblRGBBrightness${i}"></span> <div id="sldRGBBrightness${i}"></div>	</li>
 							<li>Contrast: <span id="lblRGBContrast${i}"></span> <div id="sldRGBContrast${i}"></div>	</li>
 						</div>
+
+						<div id="materials.sun_container${i}">
+							<div class="divider">
+								<span>Sun</span>
+							</div>
+						
+							<li>Month: <span id="lblSunMonth${i}"></span> <div id="sldSunMonth${i}"></div>	</li>
+							<li>Day: <span id="lblSunDay${i}"></span> <div id="sldSunDay${i}"></div>	</li>
+							<li>Hour: <span id="lblSunHour${i}"></span> <div id="sldSunHour${i}"></div>	</li>
+							<li>Minute: <span id="lblSunMinute${i}"></span> <div id="sldSunMinute${i}"></div>	</li>
+						</div>
 						
 						<div id="materials.color_container${i}">
 							<div class="divider">
@@ -2412,6 +2423,7 @@ function initSceneList(){
 			let blockColor = $("#materials\\.color_container" + i);
 			let blockIntensity = $("#materials\\.intensity_container" + i);
 			let blockTransition = $("#materials\\.transition_container" + i);
+			let blockSun = $("#materials\\.sun_container" + i);
 			
 			blockIntensity.css("display", "none");
 			blockElevation.css("display", "none");
@@ -2419,6 +2431,7 @@ function initSceneList(){
 			blockColor.css("display", "none");
 			blockWeights.css("display", "none");
 			blockTransition.css("display", "none");
+			blockSun.css("display", "none");
 			
 			if(selectedValue === "Composite"){
 				blockWeights.css("display", "block");
@@ -2438,6 +2451,8 @@ function initSceneList(){
 				blockIntensity.css("display", "block");
 			}else if(selectedValue === "Intensity Gradient"){
 				blockIntensity.css("display", "block");
+			}else if(selectedValue === "Normal"){
+				blockSun.css("display", "block");
 			}
 		};
 		

@@ -53,6 +53,8 @@ uniform float clipBoxCount;
 uniform float level;
 uniform float vnStart;
 
+uniform vec3 sunDirection;
+
 uniform vec2 intensityRange;
 uniform float intensityGamma;
 uniform float intensityContrast;
@@ -397,6 +399,12 @@ vec3 getCompositeColor(){
 	return c;
 }
 
+/*float _clamp(float a, float min, float max){
+	if(a < min) return min;
+	if(a > max) return max;
+	return a;
+}*/
+
 void main() {
 	vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
 	vViewPosition = mvPosition.xyz;
@@ -412,7 +420,30 @@ void main() {
 	vec4 cl = getClassification(); 
 	
 	#ifdef color_type_rgb
-		vColor = getRGB();
+		vec3 color = getRGB();
+		//vec3 nor = (normal/2.0)+vec3(0.5, 0.5, 0.5);
+		//nor = (nor-vec3(0.5, 0.5, 0.5))*2.0;
+		//if(nor.z < -0.2) nor = -nor;
+		//if(nor.y < -0.01) nor = -nor;
+		//if(nor.x < 0.2) nor = vec3(1.0, 1.0, 1.0)-nor;
+		//vColor = nor;
+		vec3 nor = normal;
+		if(nor.z < 0.0) nor = -nor;
+		vec3 morning = vec3(0.921, -0.288, 0.263);
+		vec3 noon = vec3(0.025, 0.394, 0.919);
+		vec3 evening = vec3(-0.921, -0.251, 0.297);
+		vec3 lightDir = noon;
+
+		float angle = dot(nor.xyz, lightDir);
+		float cosTheta = clamp(angle, 0.0, 1.0);
+		
+		vec3 E = normalize(vViewPosition);// Eye vector (towards the camera)
+		vec3 R = reflect(lightDir, nor.xyz);// Direction in which the triangle reflects the light
+		float cosAngle = dot(R, vec3(E.z, E.x, E.y));
+		float cosAlpha = clamp( cosAngle, 0.0, 1.0);
+
+		//vColor = vec3(cosAlpha, cosAlpha, cosAlpha);
+		vColor = color*0.15 + color*0.85*cosTheta;// + color*0.98*pow(cosAlpha,15.0);
 	#elif defined color_type_height
 		vColor = getElevation();
 	#elif defined color_type_rgb_height
@@ -449,9 +480,15 @@ void main() {
 	#elif defined color_type_source
 		vColor = getSourceID();
 	#elif defined color_type_normal
-		vColor = normal;//(/*modelMatrix * */vec4(normal, 0.0)).xyz;
+		vec3 nor = normal;
+		//if(nor.y < -0.01) nor = -nor;
+		vColor = nor;
+		/*vec3 color = getRGB();
+		float angle = dot(nor.xyz, vec3(0.0, 0.0, 1.0));
+		float cosTheta = _clamp(angle, 0.0, 1.0);
+		vColor = color*0.0 + color*1.0*cosTheta;*/
 	#elif defined color_type_phong
-		vColor = color;
+		vColor = getRGB();
 	#elif defined color_type_composite
 		vColor = getCompositeColor();
 	#endif

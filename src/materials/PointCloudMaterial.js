@@ -250,6 +250,7 @@ Potree.PointCloudMaterial = class PointCloudMaterial extends THREE.RawShaderMate
 			maxSize:   			{ type: "f", value: maxSize },
 			octreeSize:			{ type: "f", value: 0 },
 			bbSize:				{ type: "fv", value: [0,0,0] },
+			sunDirection:		{ type: "fv", value: [0, 0, -1.0]},
 			heightMin:			{ type: "f", value: 0.0 },
 			heightMax:			{ type: "f", value: 1.0 },
 			clipBoxCount:		{ type: "f", value: 0 },
@@ -724,6 +725,14 @@ Potree.PointCloudMaterial = class PointCloudMaterial extends THREE.RawShaderMate
 	
 	set bbSize(value){
 		this.uniforms.bbSize.value = value;
+	}
+
+	get sunDirection(){
+		return this.uniforms.sunDirection.value;
+	}
+	
+	set sunDirection(value){
+		this.uniforms.sunDirection.value = value;
 	}
 
 
