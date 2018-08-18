@@ -192,6 +192,30 @@ function initAccordion(){
 
 function initAppearance(){
 
+	String.prototype.lpad = function(padString, length) {
+		var str = this;
+		while (str.length < length)
+			str = padString + str;
+		return str;
+	}
+
+	function dateFromDay(day){
+		var date = new Date(2018, 0);
+		return new Date(date.setDate(day)); // add the number of days
+	}
+
+	function formattedDate(){
+		var date = dateFromDay(viewer.getDate());
+		var months = ["January", "February", "March", "April", "May", "June",
+		"July", "August", "September", "October", "November", "December"];
+		return date.getDate()+". "+months[date.getMonth()];
+	}
+
+	function formattedTime(){
+		var time = viewer.getTime();
+		return `${(time/60).toFixed(0)}:${(time%60).toFixed(0).lpad("0", 2)}`;
+	}
+
 	//$( "#optQuality" ).selectmenu();
 	
 	//$("#optQuality").val(viewer.getQuality()).selectmenu("refresh")
@@ -233,6 +257,22 @@ function initAppearance(){
 		step: 0.01,
 		slide: function( event, ui ) {viewer.setEDLStrength(ui.value);}
 	});
+
+	$( "#sldTime" ).slider({
+		value: viewer.getTime(),
+		min: 0,
+		max: (24*60)-1,
+		step: 1,
+		slide: function( event, ui ) {viewer.setTime(ui.value);}
+	});
+
+	$( "#sldDate" ).slider({
+		value: viewer.getDate(),
+		min: 1,
+		max: 365,
+		step: 1,
+		slide: function( event, ui ) {viewer.setDate(ui.value);}
+	});
 	
 	viewer.addEventListener("point_budget_changed", function(event){
 		$( '#lblPointBudget')[0].innerHTML = Potree.utils.addCommas(viewer.getPointBudget());
@@ -263,6 +303,18 @@ function initAppearance(){
 		$('#lblEDLStrength')[0].innerHTML = viewer.getEDLStrength().toFixed(1);
 		$( "#sldEDLStrength" ).slider({value: viewer.getEDLStrength()});
 	});
+
+	viewer.addEventListener("time_changed", function(event){
+		var time = viewer.getTime();
+		var timeString = `${(time/60).toFixed(0)}:${(time%60).toFixed(0).lpad("0", 2)}`;
+		$('#lblTime')[0].innerHTML = formattedTime();
+		$( "#sldTime" ).slider({value: viewer.getTime()});
+	});
+
+	viewer.addEventListener("date_changed", function(event){
+		$('#lblDate')[0].innerHTML = formattedDate();
+		$( "#sldDate" ).slider({value: viewer.getTime()});
+	});
 	
 	viewer.addEventListener("background_changed", function(event){
 		$("input[name=background][value='" + viewer.getBackground() +  "']").prop("checked",true);
@@ -274,6 +326,9 @@ function initAppearance(){
 	$('#lblEDLRadius')[0].innerHTML = viewer.getEDLRadius().toFixed(1);
 	$('#lblEDLStrength')[0].innerHTML = viewer.getEDLStrength().toFixed(1);
 	$('#chkEDLEnabled')[0].checked = viewer.getEDLEnabled();
+	$('#lblTime')[0].innerHTML = formattedTime();
+	$('#lblDate')[0].innerHTML = formattedDate();
+
 	$("input[name=background][value='" + viewer.getBackground() +  "']").prop("checked",true);
 }
 	

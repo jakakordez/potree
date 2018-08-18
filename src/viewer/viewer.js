@@ -424,6 +424,9 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 		this.edlStrength = 1.0;
 		this.edlRadius = 1.4;
 		this.useEDL = false;
+		this.time = 12*60;
+		this.date = 26*7;
+		this.sunDirection = [0.0, 0.0, 0.0];
 		this.classifications = {
 			0:  { visible: true, name: "never classified" },
 			1:  { visible: true, name: "unclassified"     },
@@ -437,6 +440,8 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 			9:  { visible: true, name: "water"            },
 			12: { visible: true, name: "overlap"          }
 		};
+
+		this.updateSunPosition();
 		
 		this.moveSpeed = 10;		
 
@@ -524,6 +529,8 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 			this.setEDLEnabled(false);
 			this.setEDLRadius(1.4);
 			this.setEDLStrength(0.4);
+			this.setTime(12*60);
+			this.setDate(26*7);
 			this.setClipMode(Potree.ClipMode.HIGHLIGHT_INSIDE);
 			this.setPointBudget(1*1000*1000);
 			this.setShowBoundingBox(false);
@@ -745,6 +752,49 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 	getEDLRadius(){
 		return this.edlRadius;
 	};
+
+	getTime(){
+		return this.time;
+	};
+
+	getDate(){
+		return this.date;
+	};
+
+	setTime(value){
+		if(this.time !== value){
+			this.time = value;
+			this.updateSunPosition();
+			this.dispatchEvent({"type": "time_changed", "viewer": this});
+		}
+	}
+
+	setDate(value){
+		if(this.date !== value){
+			this.date = value;
+			this.updateSunPosition();
+			this.dispatchEvent({"type": "date_changed", "viewer": this});
+		}
+	}
+
+	addMinutes(date, minutes) {
+		return new Date(date.getTime() + minutes*60000);
+	}
+
+	updateSunPosition(){
+		var dateTime = new Date(2018, 0);
+		dateTime = new Date(dateTime.setDate(this.date));
+		dateTime = this.addMinutes(dateTime, this.time);
+		var sunPos = SunCalc.getPosition(dateTime, 46.08, 14.82);
+		var azimuth = sunPos.azimuth * 180 / Math.PI;
+		var altitude = sunPos.altitude * 180 / Math.PI;
+		this.sunDirection = [
+			-Math.sin(sunPos.azimuth) * Math.cos(sunPos.altitude),
+			Math.cos(sunPos.azimuth) * Math.sin(sunPos.altitude),
+			Math.sin(sunPos.altitude)
+		];
+		//console.log("Sun position at: " + dateTime + " Azimuth: "+azimuth + " altitude: " + altitude);
+	}
 	
 	setEDLStrength(value){
 		if(this.edlStrength !== value){
@@ -1732,7 +1782,6 @@ class EDLRenderer{
 		
 		this.resize();
 		
-		
 		if(viewer.background === "skybox"){
 			viewer.renderer.setClearColor(0x000000, 0);
 			viewer.renderer.clear();
@@ -1783,6 +1832,8 @@ class EDLRenderer{
 			material.spacing = pointcloud.pcoGeometry.spacing * Math.max(pointcloud.scale.x, pointcloud.scale.y, pointcloud.scale.z);
 			material.near = viewer.scene.camera.near;
 			material.far = viewer.scene.camera.far;
+			material.sunDirection = viewer.sunDirection;
+			
 		}
 		
 		viewer.renderer.render(viewer.scene.scenePointCloud, viewer.scene.camera, this.rtColor);
@@ -1805,6 +1856,7 @@ class EDLRenderer{
 			this.edlMaterial.depthTest = true;
 			this.edlMaterial.depthWrite = true;
 			this.edlMaterial.transparent = true;
+			
 		
 			Potree.utils.screenPass.render(viewer.renderer, this.edlMaterial);
 		}	

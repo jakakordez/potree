@@ -4,7 +4,6 @@
   "version": "0.0.1",
   "description": "WebGL point cloud viewer",
   "dependencies": {
-    "suncalc": "^1.8.0"
   },
   "author": "Markus Schütz",
   "license": "BSD-2-CLAUSE",

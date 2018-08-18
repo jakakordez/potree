@@ -51,6 +51,7 @@ var paths = {
 		"src/utils.js",
 		"src/Features.js",
 		"src/TextSprite.js",
+		"src/suncalc.js",
 		"src/AnimationPath.js",
 		"src/Version.js",
 		"src/utils/Measure.js",

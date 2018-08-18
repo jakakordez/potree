@@ -50,7 +50,9 @@
         "box": "Box",
         "length_unit": "Length unit",
         "freeze": "Lock view",
-        "language": "Language"
+        "language": "Language",
+        "time": "Time",
+        "date": "Date"
     },
 	"measurements": {
 		"clip": "clip",

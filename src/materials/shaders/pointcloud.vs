@@ -34,6 +34,7 @@ uniform float fov;
 uniform float spacing;
 uniform float near;
 uniform float far;
+uniform vec3 sun;
 
 #if defined use_clip_box
 	uniform mat4 clipBoxes[max_clip_boxes];
@@ -432,7 +433,7 @@ void main() {
 		vec3 morning = vec3(0.921, -0.288, 0.263);
 		vec3 noon = vec3(0.025, 0.394, 0.919);
 		vec3 evening = vec3(-0.921, -0.251, 0.297);
-		vec3 lightDir = noon;
+		vec3 lightDir = sunDirection;
 
 		float angle = dot(nor.xyz, lightDir);
 		float cosTheta = clamp(angle, 0.0, 1.0);
@@ -441,9 +442,9 @@ void main() {
 		vec3 R = reflect(lightDir, nor.xyz);// Direction in which the triangle reflects the light
 		float cosAngle = dot(R, vec3(E.z, E.x, E.y));
 		float cosAlpha = clamp( cosAngle, 0.0, 1.0);
-
+		float ambientShare = 0.15;
 		//vColor = vec3(cosAlpha, cosAlpha, cosAlpha);
-		vColor = color*0.15 + color*0.85*cosTheta;// + color*0.98*pow(cosAlpha,15.0);
+		vColor = color*ambientShare + color*(1.0-ambientShare)*cosTheta;// + color*0.98*pow(cosAlpha,15.0);
 	#elif defined color_type_height
 		vColor = getElevation();
 	#elif defined color_type_rgb_height
