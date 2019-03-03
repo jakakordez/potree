@@ -133,7 +133,7 @@ Potree.utils = class{
 		//	);
 		//}
 		
-		let materialArray = [];
+		/*let materialArray = [];
 		{
 			for (let i = 0; i < 6; i++){
 				
@@ -160,9 +160,19 @@ Potree.utils = class{
 			}
 			
 			
-		}
-		
-		var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );
+		}*/
+		let materialArray = new THREE.ShaderMaterial( {
+			vertexShader: Potree.Shaders["skybox.vs"],
+			fragmentShader: Potree.Shaders["skybox.fs"],
+			side: THREE.BackSide,
+			depthTest: false,
+			depthWrite: false,
+			uniforms: {
+				sunDirection: { type: "fv", value: [1.0, 1.0, 0.0] }
+			}
+		} )
+
+		var skyGeometry = new THREE.SphereGeometry( 5000 );
 		var skybox = new THREE.Mesh( skyGeometry, materialArray );
 
 		scene.add(skybox);
@@ -170,7 +180,7 @@ Potree.utils = class{
 		// z up
 		scene.rotation.x = Math.PI / 2;
 		
-		return {"camera": camera, "scene": scene};
+		return {"camera": camera, "scene": scene, "material": materialArray};
 	};
 
 	static createGrid(width, length, spacing, color){

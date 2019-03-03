@@ -536,7 +536,7 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 			this.setShowBoundingBox(false);
 			this.setFreeze(false);
 			this.setNavigationMode(Potree.OrbitControls);
-			this.setBackground("gradient");
+			this.setBackground("skybox");
 			
 			this.scaleFactor = 1;
 		
@@ -788,12 +788,8 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 		var sunPos = SunCalc.getPosition(dateTime, 46.08, 14.82);
 		var azimuth = sunPos.azimuth * 180 / Math.PI;
 		var altitude = sunPos.altitude * 180 / Math.PI;
-		this.sunDirection = [
-			-Math.sin(sunPos.azimuth) * Math.cos(sunPos.altitude),
-			Math.cos(sunPos.azimuth) * Math.sin(sunPos.altitude),
-			Math.sin(sunPos.altitude)
-		];
-		//console.log("Sun position at: " + dateTime + " Azimuth: "+azimuth + " altitude: " + altitude);
+		this.sunDirection = [ sunPos.azimuth, sunPos.altitude, 0 ];
+		console.log("Sun position at: " + dateTime + " Azimuth: "+azimuth + " altitude: " + altitude);
 	}
 	
 	setEDLStrength(value){
@@ -1671,7 +1667,7 @@ class PotreeRenderer{
 			
 			viewer.renderer.setSize(width, height);
 		}
-		
+
 		// render skybox
 		if(viewer.background === "skybox"){
 			viewer.renderer.clear(true, true, false);
@@ -1679,6 +1675,7 @@ class PotreeRenderer{
 			viewer.skybox.camera.fov = viewer.scene.camera.fov;
 			viewer.skybox.camera.aspect = viewer.scene.camera.aspect;
 			viewer.skybox.camera.updateProjectionMatrix();
+			viewer.skybox.material.uniforms['sunDirection'].value = viewer.sunDirection;
 			viewer.renderer.render(viewer.skybox.scene, viewer.skybox.camera);
 		}else if(viewer.background === "gradient"){
 			//viewer.renderer.clear(true, true, false);
@@ -1789,6 +1786,7 @@ class EDLRenderer{
 			viewer.skybox.camera.fov = viewer.scene.camera.fov;
 			viewer.skybox.camera.aspect = viewer.scene.camera.aspect;
 			viewer.skybox.camera.updateProjectionMatrix();
+			viewer.skybox.material.uniforms['sunDirection'].value = viewer.sunDirection;
 			viewer.renderer.render(viewer.skybox.scene, viewer.skybox.camera);
 		}else if(viewer.background === "gradient"){
 			viewer.renderer.setClearColor(0x000000, 0);

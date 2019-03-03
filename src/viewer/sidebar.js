@@ -262,7 +262,7 @@ function initAppearance(){
 		value: viewer.getTime(),
 		min: 0,
 		max: (24*60)-1,
-		step: 1,
+		step: 30,
 		slide: function( event, ui ) {viewer.setTime(ui.value);}
 	});
 

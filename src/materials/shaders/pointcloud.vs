@@ -421,30 +421,7 @@ void main() {
 	vec4 cl = getClassification(); 
 	
 	#ifdef color_type_rgb
-		vec3 color = getRGB();
-		//vec3 nor = (normal/2.0)+vec3(0.5, 0.5, 0.5);
-		//nor = (nor-vec3(0.5, 0.5, 0.5))*2.0;
-		//if(nor.z < -0.2) nor = -nor;
-		//if(nor.y < -0.01) nor = -nor;
-		//if(nor.x < 0.2) nor = vec3(1.0, 1.0, 1.0)-nor;
-		//vColor = nor;
-		vec3 nor = normal;
-		if(nor.z < 0.0) nor = -nor;
-		vec3 morning = vec3(0.921, -0.288, 0.263);
-		vec3 noon = vec3(0.025, 0.394, 0.919);
-		vec3 evening = vec3(-0.921, -0.251, 0.297);
-		vec3 lightDir = sunDirection;
-
-		float angle = dot(nor.xyz, lightDir);
-		float cosTheta = clamp(angle, 0.0, 1.0);
-		
-		vec3 E = normalize(vViewPosition);// Eye vector (towards the camera)
-		vec3 R = reflect(lightDir, nor.xyz);// Direction in which the triangle reflects the light
-		float cosAngle = dot(R, vec3(E.z, E.x, E.y));
-		float cosAlpha = clamp( cosAngle, 0.0, 1.0);
-		float ambientShare = 0.15;
-		//vColor = vec3(cosAlpha, cosAlpha, cosAlpha);
-		vColor = color*ambientShare + color*(1.0-ambientShare)*cosTheta;// + color*0.98*pow(cosAlpha,15.0);
+		vColor = getRGB();
 	#elif defined color_type_height
 		vColor = getElevation();
 	#elif defined color_type_rgb_height
@@ -481,13 +458,27 @@ void main() {
 	#elif defined color_type_source
 		vColor = getSourceID();
 	#elif defined color_type_normal
+		vec3 color = getRGB()*vec3(1.0, 1.0, 0.9);
 		vec3 nor = normal;
-		//if(nor.y < -0.01) nor = -nor;
-		vColor = nor;
-		/*vec3 color = getRGB();
-		float angle = dot(nor.xyz, vec3(0.0, 0.0, 1.0));
-		float cosTheta = _clamp(angle, 0.0, 1.0);
-		vColor = color*0.0 + color*1.0*cosTheta;*/
+		if(nor.z < 0.0) nor = -nor;
+		
+		vec3 lightDir = vec3(
+			-sin(sunDirection.x) * cos(sunDirection.y),
+			cos(sunDirection.x) * sin(sunDirection.y),
+			sin(sunDirection.y)
+		);
+
+		float angle = dot(nor.xyz, lightDir);
+		float cosTheta = clamp(angle, 0.0, 1.0);
+		
+		vec3 E = normalize(vViewPosition);// Eye vector (towards the camera)
+		vec3 R = reflect(lightDir, nor.xyz);// Direction in which the triangle reflects the light
+		float cosAngle = dot(R, vec3(E.z, E.x, E.y));
+		float cosAlpha = clamp( cosAngle, 0.0, 1.0);
+		float ambientShare = 0.1;
+		if(lightDir.z < 0.0) cosTheta = 0.0;
+		//vColor = vec3(cosAlpha, cosAlpha, cosAlpha);
+		vColor = color*ambientShare + color*(1.0-ambientShare)*cosTheta;// + color*0.98*pow(cosAlpha,15.0);
 	#elif defined color_type_phong
 		vColor = getRGB();
 	#elif defined color_type_composite
